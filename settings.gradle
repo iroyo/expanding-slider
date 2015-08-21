@@ -1,1 +1,1 @@
-include ':app', ':expanding-slider'
+include ':library', ':sample'
