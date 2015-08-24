@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ExpandingSlider">
+        <attr name="slider_colorBase" format="color"/>
+        <attr name="slider_colorMain" format="color"/>
+        <attr name="slider_minValue" format="float"/>
+        <attr name="slider_maxValue" format="float"/>
+        <attr name="slider_initialValue" format="float"/>
+        <attr name="slider_showLimits" format="boolean"/>
+    </declare-styleable>
+</resources>
