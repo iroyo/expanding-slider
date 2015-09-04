@@ -4,6 +4,8 @@ package com.iroyo.expandingslider;
  * Created by iroyo on 22/8/15.
  */
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -15,6 +17,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 import java.text.DecimalFormat;
 
@@ -25,7 +28,7 @@ public class ExpandingSlider extends View {
     private int colorBase;
     private int colorMain;
     private int hFactor = 10;
-    private int hSlider;
+    private float hSlider;
 
     private float max;
     private float min;
@@ -40,6 +43,7 @@ public class ExpandingSlider extends View {
 
     private boolean showInitialValue = true;
     private boolean showIndicator = false;
+    private boolean isAnimating = false;
 
     private float position;
     float prevPosition;
@@ -53,6 +57,8 @@ public class ExpandingSlider extends View {
     private int heightCanvas;
 
     private SliderListener listener;
+
+    private ObjectAnimator slideUpAnimation, slideDownAnimation;
 
     public ExpandingSlider(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -111,6 +117,8 @@ public class ExpandingSlider extends View {
         pValue.setColor(resultColor);
         pValue.setTextSize(resultSize);
 
+
+
         a.recycle();
     }
 
@@ -141,6 +149,7 @@ public class ExpandingSlider extends View {
         this.hSlider = h - (h * hFactor) / 100;
         this.position = (w * prevPosition) / prevWidthCanvas;
         updateResult();
+        initAnimation();
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
@@ -150,7 +159,7 @@ public class ExpandingSlider extends View {
         drawBase(canvas);
         drawSlider(canvas);
         if (showInitialValue) drawValue(canvas);
-        if (showIndicator) drawIndicator(canvas);
+        if (showIndicator && !isAnimating) drawIndicator(canvas);
         if (title != null) drawTitle(canvas);
     }
 
@@ -232,6 +241,14 @@ public class ExpandingSlider extends View {
         this.showInitialValue = showInitialValue;
     }
 
+    public float getHeightSlider() {
+        return hSlider;
+    }
+
+    public void setHeightSlider(float hSlider) {
+        this.hSlider = hSlider;
+        invalidate();
+    }
 
     private void updateResult() {
         this.result = valueFormat.format(value);
@@ -252,14 +269,57 @@ public class ExpandingSlider extends View {
         valueFormat = new DecimalFormat("###,###,###,##0" + b.toString());
     }
 
+    private void initAnimation() {
+
+        slideUpAnimation = ObjectAnimator.ofFloat(this, "heightSlider", 0).setDuration(350);
+        slideUpAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+        slideUpAnimation.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                isAnimating = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) { }
+
+            @Override
+            public void onAnimationCancel(Animator animation) { }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) { }
+        });
+
+        slideDownAnimation = ObjectAnimator.ofFloat(this, "heightSlider", hSlider).setDuration(650);
+        slideDownAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+        slideDownAnimation.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) { }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                isAnimating = false;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                isAnimating = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) { }
+        });
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent e) {
+
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                hSlider = 0;
+                slideUpAnimation.start();
                 break;
             case MotionEvent.ACTION_UP:
-                hSlider = heightCanvas - (heightCanvas * hFactor) / 100;
+                slideUpAnimation.cancel();
+                slideDownAnimation.start();
                 break;
             case MotionEvent.ACTION_MOVE:
                 updateValue(e.getX());
@@ -302,6 +362,5 @@ public class ExpandingSlider extends View {
                     Math.max((int) (b * factor), 0));
         }
     }
-
 
 }
