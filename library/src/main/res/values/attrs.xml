@@ -6,11 +6,15 @@
         <attr name="slider_minValue" format="float"/>
         <attr name="slider_maxValue" format="float"/>
         <attr name="slider_initialValue" format="float"/>
+        <attr name="slider_resultSize" format="dimension"/>
+        <attr name="slider_resultColor" format="color"/>
+        <attr name="slider_showValue" format="boolean"/>
         <attr name="slider_showLimits" format="boolean"/>
         <attr name="slider_showIndicator" format="boolean"/>
         <attr name="slider_title" format="string"/>
         <attr name="slider_titleSize" format="dimension"/>
         <attr name="slider_titleColor" format="color"/>
-
+        <attr name="slider_unit" format="string"/>
+        <attr name="slider_digits" format="integer"/>
     </declare-styleable>
 </resources>
