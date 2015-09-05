@@ -14,28 +14,26 @@ import com.iroyo.expandingslider.ExpandingSlider;
 
 public class MainActivity extends Activity implements ExpandingSlider.SliderListener {
 
-    TextView result;
-    ExpandingSlider slider;
+    TextView result1, result2, result3;
+    ExpandingSlider slider1, slider2, slider3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        result = (TextView) findViewById(R.id.result);
-        result.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                slider.setValue(55);
-            }
-        });
-        slider = (ExpandingSlider) findViewById(R.id.slider);
-        slider.setListener(this);
+        result1 = (TextView) findViewById(R.id.result1);
+        slider1 = (ExpandingSlider) findViewById(R.id.slider1);
+        slider2 = (ExpandingSlider) findViewById(R.id.slider2);
+        slider3 = (ExpandingSlider) findViewById(R.id.slider3);
+        slider1.setListener(this);
+        slider2.setListener(this);
+        slider3.setListener(this);
 
     }
 
     @Override
     public void onValueChanged(float value, View v) {
-        result.setText("VALUE: " + value);
+        if (v.getId() == R.id.slider1) result1.setText("VALUE: " + value);
     }
 }

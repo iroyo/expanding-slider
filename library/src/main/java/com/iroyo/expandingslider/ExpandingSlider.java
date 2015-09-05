@@ -18,6 +18,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 
 import java.text.DecimalFormat;
 
@@ -25,22 +28,21 @@ public class ExpandingSlider extends View {
 
     private Paint pSlider, pIndicator, pBase, pTitle, pValue;
 
-    private int colorBase;
-    private int colorMain;
     private int hFactor = 10;
     private float hSlider;
+    private float marginLeft, marginRight;
 
     private float max;
     private float min;
     private float value;
 
-    private int digits;
     private String unit = "";
     private String result = "";
     private float resultSize;
     private int resultColor;
     private DecimalFormat valueFormat;
 
+    private boolean showAnimation = true;
     private boolean showInitialValue = true;
     private boolean showIndicator = false;
     private boolean isAnimating = false;
@@ -74,23 +76,27 @@ public class ExpandingSlider extends View {
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.ExpandingSlider);
 
         // GET VALUES FROM XML
+        showAnimation = a.getBoolean(R.styleable.ExpandingSlider_slider_showAnimation, true);
         showInitialValue = a.getBoolean(R.styleable.ExpandingSlider_slider_showValue, true);
         showIndicator = a.getBoolean(R.styleable.ExpandingSlider_slider_showIndicator, false);
+        marginLeft = a.getDimension(R.styleable.ExpandingSlider_slider_marginLeft, 12);
+        marginRight = a.getDimension(R.styleable.ExpandingSlider_slider_marginRight, 12);
         resultColor = a.getColor(R.styleable.ExpandingSlider_slider_resultColor, Color.BLACK);
-        titleColor = a.getColor(R.styleable.ExpandingSlider_slider_titleColor, Color.BLACK);
-        colorBase = a.getColor(R.styleable.ExpandingSlider_slider_colorBase, Color.GRAY);
-        colorMain = a.getColor(R.styleable.ExpandingSlider_slider_colorMain, Color.CYAN);
         resultSize = a.getDimension(R.styleable.ExpandingSlider_slider_resultSize, 18f);
+        titleColor = a.getColor(R.styleable.ExpandingSlider_slider_titleColor, Color.BLACK);
         titleSize = a.getDimension(R.styleable.ExpandingSlider_slider_titleSize, 20f);
-        digits = a.getInteger(R.styleable.ExpandingSlider_slider_digits, 0);
-        unit = a.getString(R.styleable.ExpandingSlider_slider_unit);
-        value = a.getFloat(R.styleable.ExpandingSlider_slider_initialValue, 20f);
         title = a.getString(R.styleable.ExpandingSlider_slider_title);
+        value = a.getFloat(R.styleable.ExpandingSlider_slider_initialValue, 20f);
+        unit = a.getString(R.styleable.ExpandingSlider_slider_unit);
         max = a.getFloat(R.styleable.ExpandingSlider_slider_maxValue, 100f);
         min = a.getFloat(R.styleable.ExpandingSlider_slider_minValue, 0f);
 
+        int colorBase = a.getColor(R.styleable.ExpandingSlider_slider_colorBase, Color.GRAY);
+        int colorMain = a.getColor(R.styleable.ExpandingSlider_slider_colorMain, Color.CYAN);
+        int digits = a.getInteger(R.styleable.ExpandingSlider_slider_digits, 0);
+
         // ORDERS IS IMPORTANT
-        initValueFormat();
+        initValueFormat(digits);
 
         // INITIALIZE CANVAS
         pSlider = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -116,8 +122,6 @@ public class ExpandingSlider extends View {
         pValue.setStyle(Paint.Style.STROKE);
         pValue.setColor(resultColor);
         pValue.setTextSize(resultSize);
-
-
 
         a.recycle();
     }
@@ -178,21 +182,21 @@ public class ExpandingSlider extends View {
     }
 
     private void drawValue(Canvas c) {
-        c.drawText(result + " " + unit, widthCanvas - 25, (heightCanvas / 2) + (resultSize / 2), pValue);
+        c.drawText(result + " " + unit, widthCanvas - marginRight, (heightCanvas / 2) + (resultSize / 2), pValue);
     }
 
     private void drawTitle(Canvas c) {
-        c.drawText(title, 40, (heightCanvas / 2) + (titleSize / 2), pTitle);
+        c.drawText(title, marginLeft, (heightCanvas / 2) + (titleSize / 2), pTitle);
     }
 
     // SETTERS & GETTERS ---------------------------------------------------------------------------
 
     public void setColorBase(int colorBase) {
-        this.colorBase = colorBase;
+        this.pBase.setColor(colorBase);
     }
 
     public void setColorMain(int colorMain) {
-        this.colorMain = colorMain;
+        this.pSlider.setColor(colorMain);
     }
 
     public void setValue(float value) {
@@ -213,11 +217,11 @@ public class ExpandingSlider extends View {
     }
 
     public void setTitleSize(float titleSize) {
-        this.titleSize = titleSize;
+        this.pTitle.setTextSize(titleSize);
     }
 
     public void setTitleColor(int titleColor) {
-        this.titleColor = titleColor;
+        this.pTitle.setColor(titleColor);
     }
 
     public void setShowIndicator(boolean showIndicator) {
@@ -229,8 +233,7 @@ public class ExpandingSlider extends View {
     }
 
     public void setDigits(int digits) {
-        this.digits = digits;
-        initValueFormat();
+        initValueFormat(digits);
     }
 
     public void setListener(SliderListener listener) {
@@ -260,7 +263,7 @@ public class ExpandingSlider extends View {
         invalidate();
     }
 
-    private void initValueFormat() {
+    private void initValueFormat(int digits) {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < digits; i++) {
             if (i == 0) b.append(".");
@@ -271,8 +274,8 @@ public class ExpandingSlider extends View {
 
     private void initAnimation() {
 
-        slideUpAnimation = ObjectAnimator.ofFloat(this, "heightSlider", 0).setDuration(350);
-        slideUpAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+        slideUpAnimation = ObjectAnimator.ofFloat(this, "heightSlider", 0).setDuration(50);
+        slideUpAnimation.setInterpolator(new LinearInterpolator());
         slideUpAnimation.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -289,8 +292,8 @@ public class ExpandingSlider extends View {
             public void onAnimationRepeat(Animator animation) { }
         });
 
-        slideDownAnimation = ObjectAnimator.ofFloat(this, "heightSlider", hSlider).setDuration(650);
-        slideDownAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+        slideDownAnimation = ObjectAnimator.ofFloat(this, "heightSlider", hSlider).setDuration(250);
+        slideDownAnimation.setInterpolator(new DecelerateInterpolator());
         slideDownAnimation.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) { }
@@ -298,6 +301,7 @@ public class ExpandingSlider extends View {
             @Override
             public void onAnimationEnd(Animator animation) {
                 isAnimating = false;
+
             }
 
             @Override
@@ -315,11 +319,13 @@ public class ExpandingSlider extends View {
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                slideUpAnimation.start();
+                if (showAnimation) slideUpAnimation.start();
+                else hSlider = 0;
                 break;
             case MotionEvent.ACTION_UP:
-                slideUpAnimation.cancel();
-                slideDownAnimation.start();
+                if (showAnimation) slideUpAnimation.cancel();
+                if (showAnimation) slideDownAnimation.start();
+                else hSlider = heightCanvas - (heightCanvas * hFactor) / 100;
                 break;
             case MotionEvent.ACTION_MOVE:
                 updateValue(e.getX());
@@ -336,7 +342,7 @@ public class ExpandingSlider extends View {
             position = x;
             float percentage = (position * 100) / widthCanvas;
             float absolute = (percentage * (max - min)) / 100;
-            value = (min > 0) ? absolute + min : absolute;
+            value = absolute + min;
             result = valueFormat.format(value);
             if(listener != null) listener.onValueChanged(value, this);
         }
@@ -361,6 +367,9 @@ public class ExpandingSlider extends View {
                     Math.max((int) (g * factor), 0),
                     Math.max((int) (b * factor), 0));
         }
+
     }
+
+
 
 }
