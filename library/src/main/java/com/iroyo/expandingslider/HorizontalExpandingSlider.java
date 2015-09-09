@@ -249,6 +249,18 @@ public class HorizontalExpandingSlider extends View {
         this.showInitialValue = showInitialValue;
     }
 
+    public float getMax() {
+        return max;
+    }
+
+    public float getMin() {
+        return min;
+    }
+
+    public float getValue() {
+        return value;
+    }
+
     public float getHeightSlider() {
         return hSlider;
     }

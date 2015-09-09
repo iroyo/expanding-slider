@@ -36,7 +36,7 @@ ext {
     artifact = 'library'
 
     libraryDescription = 'Unique slider with organic animation and expanding effect for Android'
-    libraryVersion = '0.0.2'
+    libraryVersion = '0.0.3'
 
     developerId = 'iroyo'
     developerName = 'Isaac Royo'
