@@ -2,6 +2,7 @@ package com.iroyo.expandingslider;
 
 /**
  * Created by iroyo on 22/8/15.
+ * Library
  */
 
 import android.animation.Animator;
@@ -14,17 +15,14 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
 import java.text.DecimalFormat;
 
-public class ExpandingSlider extends View {
+public class HorizontalExpandingSlider extends View {
 
     private Paint pSlider, pIndicator, pBase, pTitle, pValue;
 
@@ -39,7 +37,6 @@ public class ExpandingSlider extends View {
     private String unit = "";
     private String result = "";
     private float resultSize;
-    private int resultColor;
     private DecimalFormat valueFormat;
 
     private boolean showAnimation = true;
@@ -48,12 +45,11 @@ public class ExpandingSlider extends View {
     private boolean isAnimating = false;
 
     private float position;
-    float prevPosition;
-    float prevWidthCanvas;
+    private float prevPosition;
+    private float prevWidthCanvas;
 
     private String title = "";
     private float titleSize;
-    private int titleColor;
 
     private int widthCanvas;
     private int heightCanvas;
@@ -62,12 +58,12 @@ public class ExpandingSlider extends View {
 
     private ObjectAnimator slideUpAnimation, slideDownAnimation;
 
-    public ExpandingSlider(Context context, AttributeSet attrs) {
+    public HorizontalExpandingSlider(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(attrs);
     }
 
-    public ExpandingSlider(Context context, AttributeSet attrs, int defStyleAttr) {
+    public HorizontalExpandingSlider(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(attrs);
     }
@@ -81,9 +77,7 @@ public class ExpandingSlider extends View {
         showIndicator = a.getBoolean(R.styleable.ExpandingSlider_slider_showIndicator, false);
         marginLeft = a.getDimension(R.styleable.ExpandingSlider_slider_marginLeft, 12);
         marginRight = a.getDimension(R.styleable.ExpandingSlider_slider_marginRight, 12);
-        resultColor = a.getColor(R.styleable.ExpandingSlider_slider_resultColor, Color.BLACK);
         resultSize = a.getDimension(R.styleable.ExpandingSlider_slider_resultSize, 18f);
-        titleColor = a.getColor(R.styleable.ExpandingSlider_slider_titleColor, Color.BLACK);
         titleSize = a.getDimension(R.styleable.ExpandingSlider_slider_titleSize, 20f);
         title = a.getString(R.styleable.ExpandingSlider_slider_title);
         value = a.getFloat(R.styleable.ExpandingSlider_slider_initialValue, 20f);
@@ -91,6 +85,8 @@ public class ExpandingSlider extends View {
         max = a.getFloat(R.styleable.ExpandingSlider_slider_maxValue, 100f);
         min = a.getFloat(R.styleable.ExpandingSlider_slider_minValue, 0f);
 
+        int resultColor = a.getColor(R.styleable.ExpandingSlider_slider_resultColor, Color.BLACK);
+        int titleColor = a.getColor(R.styleable.ExpandingSlider_slider_titleColor, Color.BLACK);
         int colorBase = a.getColor(R.styleable.ExpandingSlider_slider_colorBase, Color.GRAY);
         int colorMain = a.getColor(R.styleable.ExpandingSlider_slider_colorMain, Color.CYAN);
         int digits = a.getInteger(R.styleable.ExpandingSlider_slider_digits, 0);
@@ -223,6 +219,15 @@ public class ExpandingSlider extends View {
     public void setTitleColor(int titleColor) {
         this.pTitle.setColor(titleColor);
     }
+
+    public void setResultSize(float resultSize) {
+        this.pValue.setTextSize(resultSize);
+    }
+
+    public void setResultColor(int resultColor) {
+        this.pValue.setColor(resultColor);
+    }
+
 
     public void setShowIndicator(boolean showIndicator) {
         this.showIndicator = showIndicator;

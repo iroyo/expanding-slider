@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -19,8 +19,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.1.1'
+
 }
 
 ext {
@@ -37,7 +36,7 @@ ext {
     artifact = 'library'
 
     libraryDescription = 'Unique slider with organic animation and expanding effect for Android'
-    libraryVersion = '0.0.1'
+    libraryVersion = '0.0.2'
 
     developerId = 'iroyo'
     developerName = 'Isaac Royo'
