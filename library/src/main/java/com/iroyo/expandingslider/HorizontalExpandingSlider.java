@@ -198,8 +198,10 @@ public class HorizontalExpandingSlider extends View {
     }
 
     public void setValue(float value) {
-        this.value = value;
-        updateResult();
+        if (max >= value && value >= min) {
+            this.value = value;
+            updateResult();
+        }
     }
 
     public void setMax(float max) {
@@ -269,6 +271,11 @@ public class HorizontalExpandingSlider extends View {
 
     public float getValue() {
         return value;
+    }
+
+    public int getMaxDigits() {
+        int integer = (int) max;
+        return String.valueOf(integer).length();
     }
 
     private void updateResult() {

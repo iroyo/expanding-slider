@@ -11,6 +11,7 @@ import com.iroyo.expandingslider.HorizontalExpandingSlider;
 public class MainActivity extends Activity implements HorizontalExpandingSlider.SliderListener {
 
     private TextView result1;
+    private HorizontalExpandingSlider slider1, slider2, slider3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,9 +19,9 @@ public class MainActivity extends Activity implements HorizontalExpandingSlider.
         setContentView(R.layout.activity_main);
 
         result1 = (TextView) findViewById(R.id.result1);
-        final HorizontalExpandingSlider slider1 = (HorizontalExpandingSlider) findViewById(R.id.slider1);
-        HorizontalExpandingSlider slider2 = (HorizontalExpandingSlider) findViewById(R.id.slider2);
-        HorizontalExpandingSlider slider3 = (HorizontalExpandingSlider) findViewById(R.id.slider3);
+        slider1 = (HorizontalExpandingSlider) findViewById(R.id.slider1);
+        slider2 = (HorizontalExpandingSlider) findViewById(R.id.slider2);
+        slider3 = (HorizontalExpandingSlider) findViewById(R.id.slider3);
         slider1.setListener(this);
         slider2.setListener(this);
         slider3.setListener(this);
@@ -29,6 +30,19 @@ public class MainActivity extends Activity implements HorizontalExpandingSlider.
 
     @Override
     public void onValueChanged(float value, View v) {
-        if (v.getId() == R.id.slider1) result1.setText("VALUE: " + value);
+        if (v.getId() == R.id.slider1) {
+            showInfo(slider1);
+            result1.setText("VALUE: " + value);
+        }
+        if (v.getId() == R.id.slider2) showInfo(slider2);
+        if (v.getId() == R.id.slider3) showInfo(slider3);
+
+    }
+
+    private void showInfo(HorizontalExpandingSlider slider) {
+        Log.d("ISAAC",  "MAX: " + slider.getMax() + " " +
+                        "MIN: " + slider.getMin() + " " +
+                        "VALUE: " + slider.getValue() + " " +
+                        "DIGITS: " + slider.getMaxDigits());
     }
 }
