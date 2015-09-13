@@ -2,6 +2,7 @@ package com.iroyo.expandingslider.sample;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,7 +18,7 @@ public class MainActivity extends Activity implements HorizontalExpandingSlider.
         setContentView(R.layout.activity_main);
 
         result1 = (TextView) findViewById(R.id.result1);
-        HorizontalExpandingSlider slider1 = (HorizontalExpandingSlider) findViewById(R.id.slider1);
+        final HorizontalExpandingSlider slider1 = (HorizontalExpandingSlider) findViewById(R.id.slider1);
         HorizontalExpandingSlider slider2 = (HorizontalExpandingSlider) findViewById(R.id.slider2);
         HorizontalExpandingSlider slider3 = (HorizontalExpandingSlider) findViewById(R.id.slider3);
         slider1.setListener(this);

@@ -15,7 +15,8 @@
         <attr name="slider_titleSize" format="dimension"/>
         <attr name="slider_titleColor" format="color"/>
         <attr name="slider_unit" format="string"/>
-        <attr name="slider_digits" format="integer"/>
+        <attr name="slider_decimals" format="integer"/>
+        <attr name="slider_stepSize" format="float"/>
         <attr name="slider_showAnimation" format="boolean"/>
         <attr name="slider_marginLeft" format="dimension"/>
         <attr name="slider_marginRight" format="dimension"/>

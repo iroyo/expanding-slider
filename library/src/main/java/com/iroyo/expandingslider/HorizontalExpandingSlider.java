@@ -33,6 +33,7 @@ public class HorizontalExpandingSlider extends View {
     private float max;
     private float min;
     private float value;
+    private float stepSize;
 
     private String unit = "";
     private String result = "";
@@ -75,6 +76,7 @@ public class HorizontalExpandingSlider extends View {
         showAnimation = a.getBoolean(R.styleable.ExpandingSlider_slider_showAnimation, true);
         showInitialValue = a.getBoolean(R.styleable.ExpandingSlider_slider_showValue, true);
         showIndicator = a.getBoolean(R.styleable.ExpandingSlider_slider_showIndicator, false);
+        stepSize = a.getFloat(R.styleable.ExpandingSlider_slider_stepSize, 0.5f);
         marginLeft = a.getDimension(R.styleable.ExpandingSlider_slider_marginLeft, 12);
         marginRight = a.getDimension(R.styleable.ExpandingSlider_slider_marginRight, 12);
         resultSize = a.getDimension(R.styleable.ExpandingSlider_slider_resultSize, 18f);
@@ -89,10 +91,10 @@ public class HorizontalExpandingSlider extends View {
         int titleColor = a.getColor(R.styleable.ExpandingSlider_slider_titleColor, Color.BLACK);
         int colorBase = a.getColor(R.styleable.ExpandingSlider_slider_colorBase, Color.GRAY);
         int colorMain = a.getColor(R.styleable.ExpandingSlider_slider_colorMain, Color.CYAN);
-        int digits = a.getInteger(R.styleable.ExpandingSlider_slider_digits, 0);
+        int decimals = a.getInteger(R.styleable.ExpandingSlider_slider_decimals, 0);
 
         // ORDERS IS IMPORTANT
-        initValueFormat(digits);
+        initValueFormat(decimals);
 
         // INITIALIZE CANVAS
         pSlider = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -170,7 +172,7 @@ public class HorizontalExpandingSlider extends View {
     }
 
     private void drawIndicator(Canvas c) {
-        c.drawRect(position - 12, hSlider - 6, position, heightCanvas, pIndicator);
+        c.drawRect(position - 6, hSlider - 6, position + 6, heightCanvas, pIndicator);
     }
 
     private void drawBase(Canvas c) {
@@ -228,7 +230,6 @@ public class HorizontalExpandingSlider extends View {
         this.pValue.setColor(resultColor);
     }
 
-
     public void setShowIndicator(boolean showIndicator) {
         this.showIndicator = showIndicator;
     }
@@ -237,8 +238,8 @@ public class HorizontalExpandingSlider extends View {
         this.unit = unit;
     }
 
-    public void setDigits(int digits) {
-        initValueFormat(digits);
+    public void setDecimals(int decimals) {
+        initValueFormat(decimals);
     }
 
     public void setListener(SliderListener listener) {
@@ -247,6 +248,15 @@ public class HorizontalExpandingSlider extends View {
 
     public void setShowInitialValue(boolean showInitialValue) {
         this.showInitialValue = showInitialValue;
+    }
+
+    public void setHeightSlider(float hSlider) {
+        this.hSlider = hSlider;
+        invalidate();
+    }
+
+    public float getHeightSlider() {
+        return hSlider;
     }
 
     public float getMax() {
@@ -259,15 +269,6 @@ public class HorizontalExpandingSlider extends View {
 
     public float getValue() {
         return value;
-    }
-
-    public float getHeightSlider() {
-        return hSlider;
-    }
-
-    public void setHeightSlider(float hSlider) {
-        this.hSlider = hSlider;
-        invalidate();
     }
 
     private void updateResult() {
@@ -318,7 +319,6 @@ public class HorizontalExpandingSlider extends View {
             @Override
             public void onAnimationEnd(Animator animation) {
                 isAnimating = false;
-
             }
 
             @Override
@@ -333,7 +333,7 @@ public class HorizontalExpandingSlider extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-
+        float x = e.getX();
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (showAnimation) slideUpAnimation.start();
@@ -343,9 +343,10 @@ public class HorizontalExpandingSlider extends View {
                 if (showAnimation) slideUpAnimation.cancel();
                 if (showAnimation) slideDownAnimation.start();
                 else hSlider = heightCanvas - (heightCanvas * hFactor) / 100;
+                if(x != position) updateValue(x);
                 break;
             case MotionEvent.ACTION_MOVE:
-                updateValue(e.getX());
+                if(x != position) updateValue(x);
                 break;
             default:
                 break;
@@ -359,7 +360,12 @@ public class HorizontalExpandingSlider extends View {
             position = x;
             float percentage = (position * 100) / widthCanvas;
             float absolute = (percentage * (max - min)) / 100;
-            value = absolute + min;
+            float total = absolute + min;
+
+            float remainder = total % stepSize;
+            if (remainder <= stepSize / 2f) value = total - remainder;
+            else value = total - remainder + stepSize;
+
             result = valueFormat.format(value);
             if(listener != null) listener.onValueChanged(value, this);
         }
