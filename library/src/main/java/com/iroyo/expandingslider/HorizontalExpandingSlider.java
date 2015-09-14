@@ -34,6 +34,7 @@ public class HorizontalExpandingSlider extends View {
     private float min;
     private float value;
     private float stepSize;
+    private int decimals;
 
     private String unit = "";
     private String result = "";
@@ -77,6 +78,7 @@ public class HorizontalExpandingSlider extends View {
         showInitialValue = a.getBoolean(R.styleable.ExpandingSlider_slider_showValue, true);
         showIndicator = a.getBoolean(R.styleable.ExpandingSlider_slider_showIndicator, false);
         stepSize = a.getFloat(R.styleable.ExpandingSlider_slider_stepSize, 0.5f);
+        decimals = a.getInteger(R.styleable.ExpandingSlider_slider_decimals, 0);
         marginLeft = a.getDimension(R.styleable.ExpandingSlider_slider_marginLeft, 12);
         marginRight = a.getDimension(R.styleable.ExpandingSlider_slider_marginRight, 12);
         resultSize = a.getDimension(R.styleable.ExpandingSlider_slider_resultSize, 18f);
@@ -91,7 +93,6 @@ public class HorizontalExpandingSlider extends View {
         int titleColor = a.getColor(R.styleable.ExpandingSlider_slider_titleColor, Color.BLACK);
         int colorBase = a.getColor(R.styleable.ExpandingSlider_slider_colorBase, Color.GRAY);
         int colorMain = a.getColor(R.styleable.ExpandingSlider_slider_colorMain, Color.CYAN);
-        int decimals = a.getInteger(R.styleable.ExpandingSlider_slider_decimals, 0);
 
         // ORDERS IS IMPORTANT
         initValueFormat(decimals);
@@ -241,6 +242,7 @@ public class HorizontalExpandingSlider extends View {
     }
 
     public void setDecimals(int decimals) {
+        this.decimals = decimals;
         initValueFormat(decimals);
     }
 
@@ -276,6 +278,10 @@ public class HorizontalExpandingSlider extends View {
     public int getMaxDigits() {
         int integer = (int) max;
         return String.valueOf(integer).length();
+    }
+
+    public int getDecimals() {
+        return decimals;
     }
 
     private void updateResult() {
